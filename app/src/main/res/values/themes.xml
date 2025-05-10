@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Tao" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/backgroundDark</item>
+        <!-- Optional: Set your app logo -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <!-- Optional: Set animation duration -->
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <!-- Set the theme that will be used after the splash screen -->
+        <item name="postSplashScreenTheme">@style/Theme.Tao</item>
+    </style>
+</resources>
