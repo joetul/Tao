@@ -48,36 +48,41 @@ fun JournalScreen(
         }
     ) { paddingValues ->
         if (sessions.isEmpty()) {
-            // Empty state
+// Empty state
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = stringResource(id = R.string.message_no_sessions),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(id = R.string.message_complete_first_session),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Button(
-                    onClick = { showAddSessionDialog = true }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+                    Text(
+                        text = stringResource(id = R.string.message_no_sessions),
+                        style = MaterialTheme.typography.titleLarge
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(id = R.string.action_add_session_manually))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(id = R.string.message_complete_first_session),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { showAddSessionDialog = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(id = R.string.action_add_session_manually))
+                    }
                 }
             }
         } else {
