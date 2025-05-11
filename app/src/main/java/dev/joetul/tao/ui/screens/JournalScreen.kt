@@ -16,6 +16,8 @@ import dev.joetul.tao.ui.components.AddSessionDialog
 import dev.joetul.tao.ui.components.SessionItem
 import dev.joetul.tao.ui.components.StatsCard
 import dev.joetul.tao.viewmodel.JournalViewModel
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,10 +38,10 @@ fun JournalScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Journal") },
+                title = { Text(stringResource(id = R.string.screen_journal)) },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(id = R.string.cd_back))
                     }
                 }
             )
@@ -53,34 +55,29 @@ fun JournalScreen(
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(16.dp)
+                Text(
+                    text = stringResource(id = R.string.message_no_sessions),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(id = R.string.message_complete_first_session),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = { showAddSessionDialog = true }
                 ) {
-                    Text(
-                        text = "No meditation sessions yet",
-                        style = MaterialTheme.typography.titleLarge
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Complete your first meditation to start your journal",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Button(
-                        onClick = { showAddSessionDialog = true }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Add Session Manually")
-                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(id = R.string.action_add_session_manually))
                 }
             }
         } else {
@@ -112,7 +109,7 @@ fun JournalScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Session History",
+                            text = stringResource(id = R.string.title_session_history),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -128,7 +125,7 @@ fun JournalScreen(
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Add Session")
+                            Text(stringResource(id = R.string.action_add_session))
                         }
                     }
 

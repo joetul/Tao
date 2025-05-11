@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import dev.joetul.tao.data.MeditationSession
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun SessionItem(
@@ -80,7 +82,7 @@ fun SessionItem(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit note",
+                            contentDescription = stringResource(id = R.string.cd_edit_note),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -92,7 +94,7 @@ fun SessionItem(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete session",
+                            contentDescription = stringResource(id = R.string.cd_delete_session),
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
@@ -131,7 +133,7 @@ fun SessionItem(
     if (showNoteDialog) {
         AlertDialog(
             onDismissRequest = { showNoteDialog = false },
-            title = { Text("Session Notes") },
+            title = { Text(stringResource(id = R.string.title_session_notes)) },
             text = {
                 Column {
                     Text(
@@ -146,8 +148,8 @@ fun SessionItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp),
-                        label = { Text("Notes") },
-                        placeholder = { Text("How was your meditation?") }
+                        label = { Text(stringResource(id = R.string.label_notes)) },
+                        placeholder = { Text(stringResource(id = R.string.placeholder_meditation_notes)) }
                     )
                 }
             },
@@ -158,7 +160,7 @@ fun SessionItem(
                         showNoteDialog = false
                     }
                 ) {
-                    Text("Save")
+                    Text(stringResource(id = R.string.action_save))
                 }
             },
             dismissButton = {
@@ -168,7 +170,7 @@ fun SessionItem(
                         showNoteDialog = false
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             }
         )
@@ -178,9 +180,9 @@ fun SessionItem(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Session") },
+            title = { Text(stringResource(id = R.string.title_delete_session)) },
             text = {
-                Text("Are you sure you want to delete this meditation session? This action cannot be undone.")
+                Text(stringResource(id = R.string.message_delete_confirmation))
             },
             confirmButton = {
                 Button(
@@ -192,14 +194,14 @@ fun SessionItem(
                         containerColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Delete")
+                    Text(stringResource(id = R.string.action_delete))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDeleteDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             }
         )

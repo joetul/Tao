@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.util.Locale
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun StatsCard(
@@ -27,7 +29,7 @@ fun StatsCard(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Meditation Stats",
+                text = stringResource(id = R.string.title_meditation_stats),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxWidth(),
@@ -42,12 +44,12 @@ fun StatsCard(
             ) {
                 StatItem(
                     value = sessionCount.toString(),
-                    label = "Sessions"
+                    label = stringResource(id = R.string.stat_label_sessions)
                 )
 
                 StatItem(
                     value = formatTotalMeditationTime(totalMeditationTime),
-                    label = "Total Time"
+                    label = stringResource(id = R.string.stat_label_total_time)
                 )
             }
 
@@ -59,12 +61,12 @@ fun StatsCard(
             ) {
                 StatItem(
                     value = currentStreak.toString(),
-                    label = "Current Streak"
+                    label = stringResource(id = R.string.stat_label_current_streak)
                 )
 
                 StatItem(
                     value = maxStreak.toString(),
-                    label = "Best Streak"
+                    label = stringResource(id = R.string.stat_label_best_streak)
                 )
             }
         }

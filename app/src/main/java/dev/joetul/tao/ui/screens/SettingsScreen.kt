@@ -28,6 +28,11 @@ import dev.joetul.tao.ui.components.ImportExportSection
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.filled.Check
 import androidx.core.net.toUri
+import androidx.compose.material.icons.filled.PlayArrow
+import android.media.MediaPlayer
+import dev.joetul.tao.model.MeditationSounds
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,10 +90,13 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(id = R.string.screen_settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.cd_back)
+                        )
                     }
                 }
             )
@@ -104,7 +112,7 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Display",
+                text = stringResource(id = R.string.settings_section_display),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
@@ -123,11 +131,11 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Keep Screen On",
+                            text = stringResource(id = R.string.setting_keep_screen_on),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "Prevent screen from turning off during meditation",
+                            text = stringResource(id = R.string.setting_keep_screen_on_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -163,11 +171,11 @@ fun SettingsScreen(
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "Theme",
+                                    text = stringResource(id = R.string.setting_theme),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(
-                                    text = "Choose app appearance",
+                                    text = stringResource(id = R.string.setting_choose_appearance_description),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -191,7 +199,7 @@ fun SettingsScreen(
                 if (showThemeDialog) {
                     AlertDialog(
                         onDismissRequest = { showThemeDialog = false },
-                        title = { Text("Select Theme") },
+                        title = { Text(stringResource(id = R.string.title_select_theme)) },
                         text = {
                             Column(
                                 modifier = Modifier.fillMaxWidth(),
@@ -213,7 +221,7 @@ fun SettingsScreen(
                                         if (currentTheme == mode) {
                                             Icon(
                                                 imageVector = Icons.Default.Check,
-                                                contentDescription = "Selected",
+                                                contentDescription = stringResource(id = R.string.cd_theme_selected),
                                                 tint = MaterialTheme.colorScheme.primary
                                             )
                                         }
@@ -226,8 +234,161 @@ fun SettingsScreen(
                 }
             }
 
+            // Sound Section - Add this right after the Display section and before Notifications
             Text(
-                text = "Notifications",
+                text = stringResource(id = R.string.settings_section_sound),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+            )
+
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                var showSoundDialog by remember { mutableStateOf(false) }
+                val soundPrefs = remember { sharedPrefs }
+                val currentSoundId = remember {
+                    soundPrefs.getString("meditation_sound", MeditationSounds.DEFAULT.id) ?: MeditationSounds.DEFAULT.id
+                }
+                var selectedSound by remember {
+                    mutableStateOf(MeditationSounds.getSoundById(currentSoundId))
+                }
+
+                // The main clickable row
+                Surface(
+                    onClick = { showSoundDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(id = R.string.setting_meditation_sound),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = stringResource(id = R.string.setting_meditation_sound_description),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = selectedSound.getDisplayName(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+
+                // Sound selection dialog with preview capability
+                if (showSoundDialog) {
+                    // Remember MediaPlayer for previewing sounds
+                    val mediaPlayer = remember { MediaPlayer() }
+
+                    // Cleanup when dialog closes
+                    DisposableEffect(Unit) {
+                        onDispose {
+                            mediaPlayer.release()
+                        }
+                    }
+
+                    // Function to preview a sound
+                    fun previewSound(soundResourceId: Int) {
+                        try {
+                            mediaPlayer.reset()
+                            val descriptor = context.resources.openRawResourceFd(soundResourceId)
+                            mediaPlayer.setDataSource(descriptor.fileDescriptor, descriptor.startOffset, descriptor.length)
+                            descriptor.close()
+                            mediaPlayer.prepare()
+                            mediaPlayer.start()
+                        } catch (e: Exception) {
+                            // Silent error handling
+                        }
+                    }
+
+                    AlertDialog(
+                        onDismissRequest = { showSoundDialog = false },
+                        title = { Text(stringResource(id = R.string.title_select_sound)) },
+                        text = {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(max = 300.dp)
+                                    .verticalScroll(rememberScrollState()),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                MeditationSounds.allSounds.forEach { sound ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                selectedSound = sound
+                                                soundPrefs.edit {
+                                                    putString("meditation_sound", sound.id)
+                                                }
+                                                showSoundDialog = false
+                                            }
+                                            .padding(vertical = 12.dp, horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = sound.getDisplayName(),
+                                            modifier = Modifier.weight(1f)
+                                        )
+
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            // Play button to preview the sound
+                                            IconButton(
+                                                onClick = { previewSound(sound.resourceId) },
+                                                modifier = Modifier.size(32.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.PlayArrow,
+                                                    contentDescription = stringResource(id = R.string.cd_preview_sound),
+                                                    tint = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+
+                                            // Selected indicator
+                                            if (selectedSound.id == sound.id) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = stringResource(id = R.string.cd_sound_selected),
+                                                    tint = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(onClick = { showSoundDialog = false }) {
+                                Text(stringResource(id = R.string.action_close))
+                            }
+                        }
+                    )
+                }
+            }
+
+            Text(
+                text = stringResource(id = R.string.settings_section_notifications),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
@@ -246,11 +407,11 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Do Not Disturb",
+                            text = stringResource(id = R.string.setting_do_not_disturb),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "Silence notifications during meditation (automatically turns off when meditation ends)",
+                            text = stringResource(id = R.string.setting_do_not_disturb_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -276,7 +437,7 @@ fun SettingsScreen(
                             },
                             contentPadding = PaddingValues(horizontal = 8.dp)
                         ) {
-                            Text("Allow")
+                            Text(stringResource(id = R.string.action_allow))
                         }
                     }
                 }
@@ -289,7 +450,7 @@ fun SettingsScreen(
 
             // About Section
             Text(
-                text = "About",
+                text = stringResource(id = R.string.settings_section_about),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
@@ -306,8 +467,9 @@ fun SettingsScreen(
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW,
-                                "https://github.com/joetul/tao".toUri())
+                            // Get the URL string resource outside the lambda
+                            val repoUrl = context.getString(R.string.about_source_code_full_url)
+                            val intent = Intent(Intent.ACTION_VIEW, repoUrl.toUri())
                             context.startActivity(intent)
                         }
                     ) {
@@ -320,18 +482,18 @@ fun SettingsScreen(
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "Source Code",
+                                    text = stringResource(id = R.string.about_source_code),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(
-                                    text = "github.com/joetul/tao",
+                                    text = stringResource(id = R.string.about_source_code_display_url),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "Visit repository",
+                                contentDescription = stringResource(id = R.string.cd_visit_repository),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -350,13 +512,13 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Privacy Policy",
+                                text = stringResource(id = R.string.about_privacy_policy),
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.weight(1f)
                             )
                             Icon(
                                 Icons.Filled.Info,
-                                contentDescription = "View privacy policy",
+                                contentDescription = stringResource(id = R.string.cd_view_privacy_policy),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -375,13 +537,13 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "License",
+                                text = stringResource(id = R.string.about_license),
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.weight(1f)
                             )
                             Icon(
                                 Icons.Filled.Info,
-                                contentDescription = "View license",
+                                contentDescription = stringResource(id = R.string.cd_view_license),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -397,10 +559,9 @@ fun SettingsScreen(
     if (showPermissionDialog) {
         AlertDialog(
             onDismissRequest = { showPermissionDialog = false },
-            title = { Text("Permission Required") },
+            title = { Text(stringResource(id = R.string.title_permission_required)) },
             text = {
-                Text("To use Do Not Disturb mode during meditation, the app needs permission to modify notification settings. " +
-                        "Do Not Disturb will be automatically disabled when meditation ends.")
+                Text(stringResource(id = R.string.message_dnd_permission))
             },
             confirmButton = {
                 Button(
@@ -409,14 +570,14 @@ fun SettingsScreen(
                         showPermissionDialog = false
                     }
                 ) {
-                    Text("Grant Permission")
+                    Text(stringResource(id = R.string.action_grant_permission))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showPermissionDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.action_cancel))
                 }
             }
         )
@@ -426,23 +587,15 @@ fun SettingsScreen(
     if (showPrivacyPolicyDialog) {
         AlertDialog(
             onDismissRequest = { showPrivacyPolicyDialog = false },
-            title = { Text("Privacy Policy") },
+            title = { Text(stringResource(id = R.string.title_privacy_policy)) },
             text = {
-                Column {
-                    Text(
-                        "Tao Meditation App does not collect any personal data from users. The app operates completely offline with no internet permissions, ensuring all your meditation data remains on your device.",
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        "The app processes meditation session data solely for the purpose of providing meditation timing and tracking features. All data is stored locally on your device and is never transmitted elsewhere."
-                    )
-                }
+                Text(stringResource(id = R.string.privacy_policy))
             },
             confirmButton = {
                 Button(
                     onClick = { showPrivacyPolicyDialog = false }
                 ) {
-                    Text("Close")
+                    Text(stringResource(id = R.string.action_close))
                 }
             }
         )
@@ -452,38 +605,21 @@ fun SettingsScreen(
     if (showLicenseDialog) {
         AlertDialog(
             onDismissRequest = { showLicenseDialog = false },
-            title = { Text("MIT License") },
+            title = { Text(stringResource(id = R.string.title_mit_license)) },
             text = {
                 Box(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
                         .padding(vertical = 8.dp)
                 ) {
-                    Text(
-                        "Copyright (c) 2025 joetul\n\n" +
-                                "Permission is hereby granted, free of charge, to any person obtaining a copy " +
-                                "of this software and associated documentation files (the \"Software\"), to deal " +
-                                "in the Software without restriction, including without limitation the rights " +
-                                "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell " +
-                                "copies of the Software, and to permit persons to whom the Software is " +
-                                "furnished to do so, subject to the following conditions:\n\n" +
-                                "The above copyright notice and this permission notice shall be included in all " +
-                                "copies or substantial portions of the Software.\n\n" +
-                                "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR " +
-                                "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, " +
-                                "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE " +
-                                "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER " +
-                                "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, " +
-                                "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE " +
-                                "SOFTWARE."
-                    )
+                    Text(stringResource(id = R.string.mit_license_text))
                 }
             },
             confirmButton = {
                 Button(
                     onClick = { showLicenseDialog = false }
                 ) {
-                    Text("Close")
+                    Text(stringResource(id = R.string.action_close))
                 }
             }
         )

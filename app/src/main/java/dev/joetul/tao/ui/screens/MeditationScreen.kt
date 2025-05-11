@@ -39,6 +39,8 @@ import dev.joetul.tao.ui.components.CircularTimePickerDialog
 import dev.joetul.tao.ui.components.TimerButton
 import dev.joetul.tao.ui.components.TimerDisplay
 import dev.joetul.tao.viewmodel.TimerViewModel
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +77,7 @@ fun MeditationScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = context.getString(dev.joetul.tao.R.string.app_name),
+                        text = context.getString(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(start = 4.dp)
                     )
@@ -84,13 +86,13 @@ fun MeditationScreen(
                     IconButton(onClick = onNavigateToJournal) {
                         Icon(
                             imageVector = Icons.Default.Book,
-                            contentDescription = "Journal"
+                            contentDescription = stringResource(id = R.string.cd_journal)
                         )
                     }
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings"
+                            contentDescription = stringResource(id = R.string.cd_settings)
                         )
                     }
                 }
@@ -164,9 +166,9 @@ fun MeditationScreen(
             if (showBatteryDialog) {
                 AlertDialog(
                     onDismissRequest = { /* Dialog cannot be dismissed */ },
-                    title = { Text("Battery Optimization") },
+                    title = { Text(stringResource(id = R.string.title_battery_optimization)) },
                     text = {
-                        Text("For the timer to work properly in the background, the app needs to be exempted from battery optimizations. Please allow this permission on the next screen.")
+                        Text(stringResource(id = R.string.message_battery_optimization))
                     },
                     confirmButton = {
                         Button(
@@ -175,7 +177,7 @@ fun MeditationScreen(
                                 viewModel.requestBatteryOptimizationExemption()
                             }
                         ) {
-                            Text("Continue")
+                            Text(stringResource(id = R.string.action_continue))
                         }
                     }
                     // No dismiss button - user must continue

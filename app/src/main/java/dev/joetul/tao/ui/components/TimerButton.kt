@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.joetul.tao.model.TimerState
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun TimerButton(
@@ -19,19 +21,19 @@ fun TimerButton(
 ) {
     val (buttonText, buttonColors) = when (timerState) {
         TimerState.IDLE -> Pair(
-            "Start",
+            stringResource(id = R.string.timer_action_start),
             ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
             )
         )
         TimerState.RUNNING -> Pair(
-            "Stop",
+            stringResource(id = R.string.timer_action_stop),
             ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error
             )
         )
         TimerState.PAUSED -> Pair(
-            "Resume",
+            stringResource(id = R.string.timer_action_resume),
             ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.tertiary
             )

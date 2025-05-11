@@ -21,6 +21,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +67,7 @@ fun AddSessionDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                "Add Meditation Session",
+                text = stringResource(id = R.string.add_meditation_dialog_title),
                 style = MaterialTheme.typography.headlineSmall
             )
         },
@@ -91,7 +93,7 @@ fun AddSessionDialog(
                             .padding(16.dp)
                     ) {
                         Text(
-                            "Session Details",
+                            text = stringResource(id = R.string.session_details_title),
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
@@ -107,7 +109,7 @@ fun AddSessionDialog(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                "$selectedDurationMinutes minutes",
+                                text = "$selectedDurationMinutes ${stringResource(id = R.string.unit_minutes)}",
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
@@ -163,10 +165,10 @@ fun AddSessionDialog(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Timer,
-                            contentDescription = "Set Duration"
+                            contentDescription = stringResource(id = R.string.cd_set_duration)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Set Duration")
+                        Text(text = stringResource(id = R.string.cd_set_duration))
                     }
 
                     OutlinedButton(
@@ -177,10 +179,10 @@ fun AddSessionDialog(
                     ) {
                         Icon(
                             imageVector = Icons.Default.CalendarMonth,
-                            contentDescription = "Set Date"
+                            contentDescription = stringResource(id = R.string.cd_set_date)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Set Date")
+                        Text(text = stringResource(id = R.string.cd_set_date))
                     }
 
                     OutlinedButton(
@@ -191,10 +193,10 @@ fun AddSessionDialog(
                     ) {
                         Icon(
                             imageVector = Icons.Default.AccessTime,
-                            contentDescription = "Set Time"
+                            contentDescription = stringResource(id = R.string.cd_set_time)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Set Time")
+                        Text(text = stringResource(id = R.string.cd_set_time))
                     }
                 }
             }
@@ -217,12 +219,12 @@ fun AddSessionDialog(
                     onDismiss()
                 }
             ) {
-                Text("Add Session")
+                Text(text = stringResource(id = R.string.action_add_session))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(text = stringResource(id = R.string.action_cancel))
             }
         }
     )
@@ -269,12 +271,12 @@ fun AddSessionDialog(
                     }
                     showDatePicker = false
                 }) {
-                    Text("OK")
+                    Text(text = stringResource(id = R.string.action_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Text(text = stringResource(id = R.string.action_cancel))
                 }
             }
         ) {
@@ -302,7 +304,7 @@ fun AddSessionDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Select Time",
+                        text = stringResource(id = R.string.title_select_time),
                         style = MaterialTheme.typography.titleLarge
                     )
 
@@ -317,7 +319,7 @@ fun AddSessionDialog(
                         horizontalArrangement = Arrangement.End
                     ) {
                         TextButton(onClick = { showTimePicker = false }) {
-                            Text("Cancel")
+                            Text(text = stringResource(id = R.string.action_cancel))
                         }
 
                         TextButton(onClick = {
@@ -327,7 +329,7 @@ fun AddSessionDialog(
                                 .withMinute(timePickerState.minute)
                             showTimePicker = false
                         }) {
-                            Text("OK")
+                            Text(text = stringResource(id = R.string.action_ok))
                         }
                     }
                 }

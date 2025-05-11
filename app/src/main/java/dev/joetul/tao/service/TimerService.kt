@@ -27,6 +27,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
 import androidx.core.content.edit
+import dev.joetul.tao.model.MeditationSounds
 
 class TimerService : Service() {
     private val binder = TimerBinder()
@@ -118,7 +119,7 @@ class TimerService : Service() {
             // Show a toast for short sessions (less than 30 seconds)
             android.widget.Toast.makeText(
                 applicationContext,
-                "Meditation sessions under 30 seconds are not recorded",
+                getString(R.string.short_meditation_message),
                 android.widget.Toast.LENGTH_LONG // Use LONG duration for better visibility
             ).show()
         }
@@ -132,6 +133,16 @@ class TimerService : Service() {
 
     private fun initMediaPlayer() {
         try {
+            // Get the selected sound from preferences
+            val sharedPrefs = applicationContext.getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
+            val soundId = sharedPrefs.getString("meditation_sound", MeditationSounds.DEFAULT.id) ?: MeditationSounds.DEFAULT.id
+
+            // Get the sound object for the selected sound ID
+            val selectedSound = MeditationSounds.getSoundById(soundId)
+
+            // Get the resource ID
+            val resourceId = selectedSound.resourceId
+
             mediaPlayer = MediaPlayer().apply {
                 // Set audio attributes for better volume control and headphone compatibility
                 setAudioAttributes(
@@ -141,8 +152,8 @@ class TimerService : Service() {
                         .build()
                 )
 
-                // Load the sound file
-                val descriptor = applicationContext.resources.openRawResourceFd(R.raw.sound)
+                // Load the selected sound file
+                val descriptor = applicationContext.resources.openRawResourceFd(resourceId)
                 setDataSource(descriptor.fileDescriptor, descriptor.startOffset, descriptor.length)
                 descriptor.close()
 
@@ -190,7 +201,7 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val notification = createNotification("Meditation in progress")
+        val notification = createNotification(getString(R.string.meditation_notification_title))
 
         // Proper way to start foreground service with MEDIA_PLAYBACK type on Android 10+
         startForeground(
@@ -262,7 +273,7 @@ class TimerService : Service() {
             if (sessionDurationSeconds < 30) {
                 android.widget.Toast.makeText(
                     applicationContext,
-                    "Meditation sessions under 30 seconds are not recorded",
+                    getString(R.string.short_meditation_message),
                     android.widget.Toast.LENGTH_LONG
                 ).show()
             }
@@ -331,7 +342,7 @@ class TimerService : Service() {
                     // Show a toast message for sessions under 30 seconds
                     android.widget.Toast.makeText(
                         applicationContext,
-                        "Meditation sessions under 30 seconds are not recorded",
+                        getString(R.string.short_meditation_message),
                         android.widget.Toast.LENGTH_LONG
                     ).show()
                 }
@@ -380,8 +391,8 @@ class TimerService : Service() {
         )
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Meditation Complete")
-            .setContentText("Your meditation session has finished")
+            .setContentTitle(getString(R.string.meditation_complete_title))
+            .setContentText(getString(R.string.meditation_complete_text))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(pendingIntent)
             .build()
@@ -401,10 +412,10 @@ class TimerService : Service() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Meditation Timer",
+            getString(R.string.meditation_channel_name),
             NotificationManager.IMPORTANCE_LOW
         ).apply {
-            description = "Shows meditation timer progress"
+            description = getString(R.string.meditation_channel_description)
         }
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.createNotificationChannel(channel)
@@ -418,7 +429,7 @@ class TimerService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Meditation Timer")
+            .setContentTitle(getString(R.string.meditation_timer_title))
             .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(pendingIntent)
@@ -435,13 +446,13 @@ class TimerService : Service() {
             else -> String.format(Locale.US, "%02d:%02d", minutes, seconds)
         }
 
-        val notification = createNotification("Meditation in progress: $timeString")
+        val notification = createNotification(getString(R.string.meditation_progress_prefix) + " $timeString")
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     private fun startForegroundService() {
-        val notification = createNotification("Meditation in progress")
+        val notification = createNotification(getString(R.string.meditation_notification_title))
 
         // Proper way to start foreground service with MEDIA_PLAYBACK type on Android 10+
         startForeground(

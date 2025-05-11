@@ -1,7 +1,6 @@
 package dev.joetul.tao.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -43,7 +42,7 @@ fun TaoTheme(
     }
 
     val colorScheme = when {
-        useDynamicColors && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        useDynamicColors -> {
             if (darkTheme) dynamicDarkColorScheme(context)
             else dynamicLightColorScheme(context)
         }

@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.*
 import dev.joetul.tao.model.TimerData
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun CircularTimePickerDialog(
@@ -34,7 +36,7 @@ fun CircularTimePickerDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                "Set Meditation Duration",
+                text = stringResource(id = R.string.title_set_meditation_duration),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
@@ -68,12 +70,12 @@ fun CircularTimePickerDialog(
                     onConfirm(TimerData(hours, minutes, 0))
                 }
             ) {
-                Text("OK")
+                Text(text = stringResource(id = R.string.action_ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(text = stringResource(id = R.string.action_cancel))
             }
         }
     )

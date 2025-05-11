@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import dev.joetul.tao.viewmodel.JournalViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import dev.joetul.tao.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun ImportExportSection(
@@ -47,7 +49,7 @@ fun ImportExportSection(
 
     Column(modifier = modifier) {
         Text(
-            text = "Data Management",
+            text = stringResource(id = R.string.section_data_management),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
@@ -74,11 +76,11 @@ fun ImportExportSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "Export Journal Data",
+                        text = stringResource(id = R.string.option_export_data),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Save your meditation sessions to a file",
+                        text = stringResource(id = R.string.option_export_data_description),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -91,7 +93,7 @@ fun ImportExportSection(
                 }) {
                     Icon(
                         imageVector = Icons.Default.Download,
-                        contentDescription = "Export Data"
+                        contentDescription = stringResource(id = R.string.cd_export_data)
                     )
                 }
             }
@@ -116,11 +118,11 @@ fun ImportExportSection(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "Import Journal Data",
+                        text = stringResource(id = R.string.option_import_data),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Load meditation sessions from a file",
+                        text = stringResource(id = R.string.option_import_data_description),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -129,7 +131,7 @@ fun ImportExportSection(
                 IconButton(onClick = { importLauncher.launch(arrayOf("application/json")) }) {
                     Icon(
                         imageVector = Icons.Default.Upload,
-                        contentDescription = "Import Data"
+                        contentDescription = stringResource(id = R.string.cd_import_data)
                     )
                 }
             }
