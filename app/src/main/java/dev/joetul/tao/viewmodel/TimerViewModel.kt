@@ -15,7 +15,6 @@ import dev.joetul.tao.model.TimerData
 import dev.joetul.tao.model.TimerState
 import dev.joetul.tao.service.TimerService
 import dev.joetul.tao.util.BatteryOptimizationHelper
-import dev.joetul.tao.util.DoNotDisturbManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,9 +44,6 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
 
     // Add pending action for when battery permission is granted
     private var pendingStartTimer = false
-
-    // Add DoNotDisturbManager
-    private val doNotDisturbManager = DoNotDisturbManager(getApplication())
 
     // For UI to observe battery optimization state
     private val _batteryOptimizationRequired = MutableStateFlow(false)
@@ -110,9 +106,6 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
             viewModelScope.launch {
                 timerService?.get()?.timerState?.collect { state ->
                     _timerState.value = state
-
-                    // Handle Do Not Disturb based on timer state
-                    handleDoNotDisturbForState(state)
                 }
             }
 
@@ -255,27 +248,6 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         saveTimerData(newTimerData)
     }
 
-    private fun handleDoNotDisturbForState(state: TimerState) {
-        val doNotDisturbEnabled = sharedPrefs.getBoolean(DoNotDisturbManager.DO_NOT_DISTURB_KEY, false)
-
-        if (doNotDisturbEnabled) {
-            when (state) {
-                TimerState.RUNNING -> {
-                    // Enable Do Not Disturb when timer is running
-                    if (doNotDisturbManager.hasNotificationPolicyAccess()) {
-                        doNotDisturbManager.enableDoNotDisturb()
-                    }
-                }
-                TimerState.IDLE, TimerState.PAUSED -> {
-                    // Disable Do Not Disturb when timer is not running
-                    if (doNotDisturbManager.hasNotificationPolicyAccess()) {
-                        doNotDisturbManager.disableDoNotDisturb()
-                    }
-                }
-            }
-        }
-    }
-
     fun toggleTimer() {
         when (_timerState.value) {
             TimerState.IDLE -> {
@@ -389,12 +361,8 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
             // Ignore if already unregistered
         }
 
-        // Ensure Do Not Disturb is disabled when ViewModel is cleared
-        val doNotDisturbEnabled = sharedPrefs.getBoolean(DoNotDisturbManager.DO_NOT_DISTURB_KEY, false)
-
-        if (doNotDisturbEnabled && doNotDisturbManager.hasNotificationPolicyAccess()) {
-            doNotDisturbManager.disableDoNotDisturb()
-        }
+        // Note: We don't disable DND here anymore since the service will handle it
+        // based on the timer state
 
         // Unbind from the service if still bound
         if (bound) {
@@ -408,3 +376,4 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         super.onCleared()
     }
 }
+

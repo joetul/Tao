@@ -61,7 +61,10 @@ class TimerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Initialize DND manager
         doNotDisturbManager = DoNotDisturbManager(this)
+
         createNotificationChannel()
         initMediaPlayer()
 
@@ -90,6 +93,9 @@ class TimerService : Service() {
                 updateRemainingTime(timeLeftMillis)
                 startForegroundService()
                 startCountdown()
+
+                // Ensure DND state is correct after restoration
+                ensureDoNotDisturbState()
             } else {
                 // Timer would have finished, record the session
                 completeExpiredSession(savedStartTime, savedTimerDuration)
@@ -196,6 +202,23 @@ class TimerService : Service() {
         }
     }
 
+    // New method to ensure Do Not Disturb state matches the timer state
+    private fun ensureDoNotDisturbState() {
+        // Get the current timer state
+        val currentState = _timerState.value
+
+        // Check if Do Not Disturb is enabled in settings
+        val sharedPrefs = getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
+        val doNotDisturbEnabled = sharedPrefs.getBoolean(DoNotDisturbManager.DO_NOT_DISTURB_KEY, false)
+
+        if (doNotDisturbEnabled && doNotDisturbManager.hasNotificationPolicyAccess()) {
+            when (currentState) {
+                TimerState.RUNNING -> doNotDisturbManager.enableDoNotDisturb()
+                TimerState.IDLE, TimerState.PAUSED -> doNotDisturbManager.disableDoNotDisturb()
+            }
+        }
+    }
+
     override fun onBind(intent: Intent): IBinder {
         return binder
     }
@@ -209,6 +232,9 @@ class TimerService : Service() {
             notification,
             ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
         )
+
+        // Ensure DND state matches current timer state
+        ensureDoNotDisturbState()
 
         return START_STICKY
     }
@@ -230,17 +256,11 @@ class TimerService : Service() {
         // Acquire wake lock to prevent CPU from sleeping
         acquireWakeLock()
 
-        // Check if Do Not Disturb is enabled in settings
-        val sharedPrefs = getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
-        val doNotDisturbEnabled = sharedPrefs.getBoolean(DoNotDisturbManager.DO_NOT_DISTURB_KEY, false)
-
-        // Enable Do Not Disturb if it's enabled in settings
-        if (doNotDisturbEnabled && doNotDisturbManager.hasNotificationPolicyAccess()) {
-            doNotDisturbManager.enableDoNotDisturb()
-        }
-
         _timerState.value = TimerState.RUNNING
         updateRemainingTime(timeLeftMillis)
+
+        // Now that state is updated, ensure DND state
+        ensureDoNotDisturbState()
 
         startForegroundService()
         startCountdown()
@@ -253,16 +273,10 @@ class TimerService : Service() {
         countDownTimer?.cancel()
         releaseWakeLock()
 
-        // Check if Do Not Disturb is enabled in settings
-        val sharedPrefs = getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
-        val doNotDisturbEnabled = sharedPrefs.getBoolean(DoNotDisturbManager.DO_NOT_DISTURB_KEY, false)
-
-        // Disable Do Not Disturb if it was enabled
-        if (doNotDisturbEnabled && doNotDisturbManager.hasNotificationPolicyAccess()) {
-            doNotDisturbManager.disableDoNotDisturb()
-        }
-
         _timerState.value = TimerState.IDLE
+
+        // Now that state is updated, ensure DND state
+        ensureDoNotDisturbState()
 
         // If the timer was manually stopped, check if session was too short
         // This is helpful when coming back from app being killed
@@ -297,6 +311,9 @@ class TimerService : Service() {
 
         startCountdown()
         _timerState.value = TimerState.RUNNING
+
+        // Ensure DND state after resuming
+        ensureDoNotDisturbState()
     }
 
     private fun startCountdown() {
@@ -353,16 +370,11 @@ class TimerService : Service() {
                         .remove("service_timer_duration")
                 }
 
-                // Check if Do Not Disturb is enabled in settings
-                val sharedPrefs = getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
-                val doNotDisturbEnabled = sharedPrefs.getBoolean(DoNotDisturbManager.DO_NOT_DISTURB_KEY, false)
-
-                // Disable Do Not Disturb when timer finishes
-                if (doNotDisturbEnabled && doNotDisturbManager.hasNotificationPolicyAccess()) {
-                    doNotDisturbManager.disableDoNotDisturb()
-                }
-
                 _timerState.value = TimerState.IDLE
+
+                // Ensure DND state is updated after timer completes
+                ensureDoNotDisturbState()
+
                 releaseWakeLock()
 
                 stopForeground(STOP_FOREGROUND_REMOVE)
@@ -507,13 +519,9 @@ class TimerService : Service() {
             // Silent error handling
         }
 
-        // Check if Do Not Disturb is enabled in settings
-        val sharedPrefs = getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
-        val doNotDisturbEnabled = sharedPrefs.getBoolean(DoNotDisturbManager.DO_NOT_DISTURB_KEY, false)
-
         // Ensure Do Not Disturb is disabled when service is destroyed
-        if (doNotDisturbEnabled && doNotDisturbManager.hasNotificationPolicyAccess()) {
-            doNotDisturbManager.disableDoNotDisturb()
+        if (_timerState.value != TimerState.RUNNING) {
+            ensureDoNotDisturbState()
         }
 
         super.onDestroy()
