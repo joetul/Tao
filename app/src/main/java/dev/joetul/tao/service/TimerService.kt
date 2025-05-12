@@ -240,6 +240,9 @@ class TimerService : Service() {
     }
 
     fun startTimer(timerData: TimerData) {
+        // Reinitialize media player to load potentially updated sound
+        initMediaPlayer()
+
         // Play sound when starting timer
         playSound()
 
