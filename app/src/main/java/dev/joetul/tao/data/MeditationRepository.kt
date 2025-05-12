@@ -91,31 +91,55 @@ class MeditationRepository(private val meditationDao: MeditationDao) {
             return StreakData(0, 0)
         }
 
-        // Sort sessions by start time
-        val sortedSessions = sessions.sortedBy { it.startTime }
+        // Group sessions by date to handle multiple sessions per day
+        val sessionsByDate = sessions.groupBy { it.startTime.toLocalDate() }
+        val sessionDates = sessionsByDate.keys.sorted()
 
+        // Get current date
+        val currentDate = LocalDateTime.now().toLocalDate()
+        val mostRecentSessionDate = sessionDates.last()
+
+        // Calculate current streak
         var currentStreak = 0
-        var maxStreak = 0
-        var previousDate = sortedSessions.first().startTime.toLocalDate()
 
-        sortedSessions.forEach { session ->
-            val sessionDate = session.startTime.toLocalDate()
+        // Check if the streak is active (session today or yesterday)
+        if (mostRecentSessionDate == currentDate || mostRecentSessionDate == currentDate.minusDays(1)) {
+            // Start counting from the most recent session date
+            var checkDate = mostRecentSessionDate
+            var consecutive = true
 
-            if (sessionDate == previousDate || sessionDate.minusDays(1) == previousDate) {
-                if (sessionDate != previousDate) {
-                    // Only increment streak when moving to a new day
+            while (consecutive) {
+                if (sessionsByDate.containsKey(checkDate)) {
                     currentStreak++
+                    checkDate = checkDate.minusDays(1)
+                } else {
+                    consecutive = false
                 }
-            } else {
-                // Streak broken
-                maxStreak = maxOf(maxStreak, currentStreak)
-                currentStreak = 1
             }
-
-            previousDate = sessionDate
         }
 
-        // Check final streak
+        // Calculate maximum streak from history (independent of current streak)
+        var maxStreak = 0
+        var tempStreak = 0
+
+        // Scan all dates in order
+        for (i in sessionDates.indices) {
+            val dateInSequence = sessionDates[i]  // Renamed to avoid shadowing
+
+            // Check if this is the start of a new streak or continuation
+            if (i == 0 || dateInSequence != sessionDates[i-1].plusDays(1)) {
+                // Reset streak counter for new streak
+                tempStreak = 1
+            } else {
+                // Continue the streak
+                tempStreak++
+            }
+
+            // Update max streak if current temp streak is larger
+            maxStreak = maxOf(maxStreak, tempStreak)
+        }
+
+        // Make sure max streak isn't less than current streak
         maxStreak = maxOf(maxStreak, currentStreak)
 
         return StreakData(currentStreak, maxStreak)

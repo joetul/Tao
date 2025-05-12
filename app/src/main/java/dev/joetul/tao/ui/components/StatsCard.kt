@@ -60,16 +60,27 @@ fun StatsCard(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 StatItem(
-                    value = currentStreak.toString(),
+                    // Format streak with "d" suffix
+                    value = formatStreakValue(currentStreak),
                     label = stringResource(id = R.string.stat_label_current_streak)
                 )
 
                 StatItem(
-                    value = maxStreak.toString(),
+                    // Format streak with "d" suffix
+                    value = formatStreakValue(maxStreak),
                     label = stringResource(id = R.string.stat_label_best_streak)
                 )
             }
         }
+    }
+}
+
+// Helper function to format streak values with "d" for days
+fun formatStreakValue(days: Int): String {
+    return when (days) {
+        0 -> "0d"
+        1 -> "1d"
+        else -> "${days}d"
     }
 }
 
