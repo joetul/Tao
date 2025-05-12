@@ -410,7 +410,8 @@ class TimerService : Service() {
             .setContentText(getString(R.string.meditation_complete_text))
             .setSmallIcon(R.drawable.ic_timer_complete_notification)
             .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSilent(true) // Ensure notification is silent
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
 
         val notificationManager = getSystemService(NotificationManager::class.java)
@@ -441,9 +442,11 @@ class TimerService : Service() {
         val completedChannel = NotificationChannel(
             COMPLETED_CHANNEL_ID,
             getString(R.string.meditation_completed_channel_name),
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_LOW
         ).apply {
             description = getString(R.string.meditation_completed_channel_description)
+            setSound(null, null) // Ensure no sound by default
+            enableVibration(false) // Disable vibration
         }
 
         // Register both channels
