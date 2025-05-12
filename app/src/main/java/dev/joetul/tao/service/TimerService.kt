@@ -408,7 +408,7 @@ class TimerService : Service() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.meditation_complete_title))
             .setContentText(getString(R.string.meditation_complete_text))
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_timer_complete_notification)
             .setContentIntent(pendingIntent)
             .build()
 
@@ -446,7 +446,7 @@ class TimerService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.meditation_timer_title))
             .setContentText(contentText)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_timer_notification)
             .setContentIntent(pendingIntent)
             .build()
     }
