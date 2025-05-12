@@ -24,7 +24,6 @@ import dev.joetul.tao.viewmodel.TimerViewModel
 class MainActivity : ComponentActivity() {
     private val viewModel: TimerViewModel by viewModels()
 
-    // Option 1: Remove the empty blocks by using lambda syntax without body
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { /* Permission result handled silently */ }

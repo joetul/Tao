@@ -11,7 +11,7 @@
     <string name="sound_gong_bodhi">Gong (Bodhi)</string>
     <string name="sound_gong_synthesized">Gong (Synthesized)</string>
     <string name="sound_gong_watts">Gong (Watts)</string>
-    <string name="short_meditation_message">Meditation sessions under 30 seconds are not recorded</string>
+    <string name="short_meditation_message">Meditation sessions under 30 seconds are not saved to journal history</string>
     <string name="meditation_notification_title">Meditation in progress</string>
     <string name="meditation_complete_title">Meditation Complete</string>
     <string name="meditation_complete_text">Your meditation session has finished</string><string name="meditation_channel_name">Meditation Timer</string>
