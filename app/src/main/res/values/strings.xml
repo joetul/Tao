@@ -101,4 +101,8 @@
     <string name="cd_view_privacy_policy">View privacy policy</string>
     <string name="about_privacy_policy">Privacy Policy</string>
     <string name="settings_section_notifications">Notifications</string>
+    <string name="meditation_timer_channel_name">Meditation In Progress</string>
+    <string name="meditation_timer_channel_description">Shows notifications for active meditation timers</string>
+    <string name="meditation_completed_channel_name">Meditation Completed</string>
+    <string name="meditation_completed_channel_description">Notifications for completed meditation sessions</string>
 </resources>

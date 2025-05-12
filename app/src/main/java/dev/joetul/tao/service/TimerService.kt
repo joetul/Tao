@@ -405,15 +405,16 @@ class TimerService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this, COMPLETED_CHANNEL_ID)
             .setContentTitle(getString(R.string.meditation_complete_title))
             .setContentText(getString(R.string.meditation_complete_text))
             .setSmallIcon(R.drawable.ic_timer_complete_notification)
             .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
         val notificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager.notify(NOTIFICATION_ID + 1, notification)
+        notificationManager.notify(COMPLETION_NOTIFICATION_ID, notification)
     }
 
     private fun updateRemainingTime(millisLeft: Long) {
@@ -425,15 +426,29 @@ class TimerService : Service() {
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            getString(R.string.meditation_channel_name),
+        val notificationManager = getSystemService(NotificationManager::class.java)
+
+        // Create channel for in-progress meditation timer
+        val timerChannel = NotificationChannel(
+            TIMER_CHANNEL_ID,
+            getString(R.string.meditation_timer_channel_name),
             NotificationManager.IMPORTANCE_LOW
         ).apply {
-            description = getString(R.string.meditation_channel_description)
+            description = getString(R.string.meditation_timer_channel_description)
         }
-        val notificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
+
+        // Create channel for completed meditation notifications
+        val completedChannel = NotificationChannel(
+            COMPLETED_CHANNEL_ID,
+            getString(R.string.meditation_completed_channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = getString(R.string.meditation_completed_channel_description)
+        }
+
+        // Register both channels
+        notificationManager.createNotificationChannel(timerChannel)
+        notificationManager.createNotificationChannel(completedChannel)
     }
 
     private fun createNotification(contentText: String): android.app.Notification {
@@ -443,7 +458,7 @@ class TimerService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        return NotificationCompat.Builder(this, TIMER_CHANNEL_ID)
             .setContentTitle(getString(R.string.meditation_timer_title))
             .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_timer_notification)
@@ -531,8 +546,14 @@ class TimerService : Service() {
     }
 
     companion object {
-        private const val CHANNEL_ID = "meditation_timer_channel"
-        private const val NOTIFICATION_ID = 1
+        // Notification channel IDs
+        private const val TIMER_CHANNEL_ID = "meditation_timer_channel"
+        private const val COMPLETED_CHANNEL_ID = "meditation_completed_channel"
+
+        // Notification IDs
+        private const val NOTIFICATION_ID = 1001
+        private const val COMPLETION_NOTIFICATION_ID = 1002
+
         private const val COUNTDOWN_INTERVAL = 1000L // Update every second
 
         // Add constants for broadcast intents - these are needed for the TimerViewModel
