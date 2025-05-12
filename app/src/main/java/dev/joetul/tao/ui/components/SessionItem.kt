@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.joetul.tao.data.MeditationSession
 import java.time.format.DateTimeFormatter
@@ -120,9 +119,7 @@ fun SessionItem(
                     Text(
                         text = session.note,
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(8.dp),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        modifier = Modifier.padding(8.dp)
                     )
                 }
             }
