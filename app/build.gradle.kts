@@ -65,13 +65,9 @@ android {
         viewBinding = false
         dataBinding = false
     }
-
-    // Removed composeOptions block as it's now handled by the kotlin.plugin.compose plugin
 }
 
-// Optional: Configure compose compiler if needed
 composeCompiler {
-    // Optional: Set up reports directory
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
 }
 
@@ -81,11 +77,13 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
-    // Compose
+    // Compose UI components from BOM
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+
+    // Material 3
     implementation(libs.androidx.material3)
 
     // Navigation

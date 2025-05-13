@@ -23,6 +23,7 @@ import java.time.Instant
 import java.time.ZoneId
 import androidx.core.content.edit
 import java.lang.ref.WeakReference
+import dev.joetul.tao.R
 
 class TimerViewModel(application: Application) : AndroidViewModel(application) {
     private var timerService: WeakReference<TimerService>? = null
@@ -308,7 +309,7 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
                     // Always show a toast message for sessions under 30 seconds
                     android.widget.Toast.makeText(
                         getApplication(),
-                        "Meditation sessions under 30 seconds are not recorded",
+                        getApplication<Application>().getString(R.string.short_meditation_message),
                         android.widget.Toast.LENGTH_LONG // Use LONG duration for better visibility
                     ).show()
                 }
@@ -357,7 +358,7 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         // Unregister the broadcast receiver
         try {
             getApplication<Application>().unregisterReceiver(timerCompletionReceiver)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Ignore if already unregistered
         }
 

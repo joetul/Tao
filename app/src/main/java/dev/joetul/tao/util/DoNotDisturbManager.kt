@@ -11,7 +11,7 @@ class DoNotDisturbManager(private val context: Context) {
     private val notificationManager = context.getSystemService<NotificationManager>()
 
     fun hasNotificationPolicyAccess(): Boolean {
-        return notificationManager?.isNotificationPolicyAccessGranted ?: false
+        return notificationManager?.isNotificationPolicyAccessGranted == true
     }
 
     fun requestNotificationPolicyAccess() {

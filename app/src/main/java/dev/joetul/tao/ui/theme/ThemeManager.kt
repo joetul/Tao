@@ -42,7 +42,7 @@ class ThemeManager private constructor(context: Context) {
         val themeName = sharedPreferences.getString("theme_mode", ThemeMode.SYSTEM.name)
         return try {
             ThemeMode.valueOf(themeName ?: ThemeMode.SYSTEM.name)
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             ThemeMode.SYSTEM
         }
     }

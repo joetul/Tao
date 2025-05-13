@@ -313,7 +313,7 @@ fun SettingsScreen(
                             descriptor.close()
                             mediaPlayer.prepare()
                             mediaPlayer.start()
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             // Silent error handling
                         }
                     }

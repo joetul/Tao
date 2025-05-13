@@ -4,7 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.media.AudioAttributes
@@ -56,7 +55,7 @@ class TimerService : Service() {
 
     // SharedPreferences reference for more direct access
     private val sessionPrefs by lazy {
-        applicationContext.getSharedPreferences("meditation_session_tracking", Context.MODE_PRIVATE)
+        applicationContext.getSharedPreferences("meditation_session_tracking", MODE_PRIVATE)
     }
 
     override fun onCreate() {
@@ -140,7 +139,9 @@ class TimerService : Service() {
     private fun initMediaPlayer() {
         try {
             // Get the selected sound from preferences
-            val sharedPrefs = applicationContext.getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
+            val sharedPrefs = applicationContext.getSharedPreferences("meditation_settings",
+                MODE_PRIVATE
+            )
             val soundId = sharedPrefs.getString("meditation_sound", MeditationSounds.DEFAULT.id) ?: MeditationSounds.DEFAULT.id
 
             // Get the sound object for the selected sound ID
@@ -174,7 +175,7 @@ class TimerService : Service() {
                     initMediaPlayer()
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Silent error handling
         }
     }
@@ -189,14 +190,14 @@ class TimerService : Service() {
                 }
                 it.start()
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Try to reinitialize the player if it fails
             try {
                 mediaPlayer?.release()
                 mediaPlayer = null
                 initMediaPlayer()
                 mediaPlayer?.start()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Silent error handling
             }
         }
@@ -208,7 +209,7 @@ class TimerService : Service() {
         val currentState = _timerState.value
 
         // Check if Do Not Disturb is enabled in settings
-        val sharedPrefs = getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences("meditation_settings", MODE_PRIVATE)
         val doNotDisturbEnabled = sharedPrefs.getBoolean(DoNotDisturbManager.DO_NOT_DISTURB_KEY, false)
 
         if (doNotDisturbEnabled && doNotDisturbManager.hasNotificationPolicyAccess()) {
@@ -497,20 +498,20 @@ class TimerService : Service() {
 
     private fun acquireWakeLock() {
         try {
-            val sharedPrefs = getSharedPreferences("meditation_settings", Context.MODE_PRIVATE)
+            val sharedPrefs = getSharedPreferences("meditation_settings", MODE_PRIVATE)
             val keepScreenOn = sharedPrefs.getBoolean("keep_screen_on", true)
 
             if (keepScreenOn) {
-                val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+                val powerManager = getSystemService(POWER_SERVICE) as PowerManager
                 wakeLock = powerManager.newWakeLock(
                     PowerManager.PARTIAL_WAKE_LOCK,
                     "Tao:MeditationWakeLock"
                 )
                 wakeLock?.acquire(timerDurationMillis + 5000) // Add a small buffer
             }
-        } catch (e: SecurityException) {
+        } catch (_: SecurityException) {
             // Silent error handling
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Silent error handling
         }
     }
@@ -536,7 +537,7 @@ class TimerService : Service() {
         try {
             mediaPlayer?.release()
             mediaPlayer = null
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Silent error handling
         }
 
