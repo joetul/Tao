@@ -23,7 +23,6 @@ import java.time.Instant
 import java.time.ZoneId
 import androidx.core.content.edit
 import java.lang.ref.WeakReference
-import dev.joetul.tao.R
 
 class TimerViewModel(application: Application) : AndroidViewModel(application) {
     private var timerService: WeakReference<TimerService>? = null
@@ -305,13 +304,6 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
                         plannedDurationSeconds = plannedDurationSeconds,
                         startTime = startDateTime
                     )
-                } else {
-                    // Always show a toast message for sessions under 30 seconds
-                    android.widget.Toast.makeText(
-                        getApplication(),
-                        getApplication<Application>().getString(R.string.short_meditation_message),
-                        android.widget.Toast.LENGTH_LONG // Use LONG duration for better visibility
-                    ).show()
                 }
 
                 // Clear the session tracking info
