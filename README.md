@@ -11,7 +11,7 @@ Meditation timer with session history and stats.
 - Session history with notes
 - Statistics (total sessions, time and streaks)
 - Option to auto-enable Do Not Disturb during sessions
-- Multiple meditation sounds
+- Multiple Different sounds
 - Export and import session data
 
 ## Screenshots
@@ -35,7 +35,7 @@ This verification information is also posted on [Bluesky](https://bsky.app/profi
 
 ## Credits
 
-- App icon from [Material Design Icons](https://icon-sets.iconify.design/mdi/meditation/)
+- App icon from [Iconify](https://icon-sets.iconify.design/mdi/meditation/)
 - Audio files from [nyxkn/meditation](https://github.com/nyxkn/meditation):
   - bell_burma: [LozKaye](https://freesound.org/people/LozKaye/sounds/94024/) (CC0)
   - bell_indian: [SoundBible](https://soundbible.com/1690-Indian-Bell.html) (CC Sampling Plus 1.0)
