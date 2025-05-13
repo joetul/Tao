@@ -7,10 +7,10 @@ Meditation timer with session history and stats.
 - Free and open-source (FOSS) under MIT license
 - No tracking, no ads, no internet permissions
 - Material Design 3 UI
-- Timer works in background
+- Reliable timer
 - Session history with notes
 - Statistics (total sessions, time and streaks)
-- Auto-enable Do Not Disturb during sessions
+- Option to auto-enable Do Not Disturb during sessions
 - Multiple meditation sounds
 - Export and import session data
 
