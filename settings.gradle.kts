@@ -11,8 +11,11 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+// Use a different approach for repository management
+// This avoids the incubating API warnings
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    // Instead of using repositoriesMode.set() with the incubating enum
     repositories {
         google()
         mavenCentral()
@@ -21,4 +24,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Tao"
 include(":app")
- 

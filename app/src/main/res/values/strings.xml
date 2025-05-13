@@ -40,7 +40,6 @@
     <string name="cd_delete_session">Delete session</string>
     <string name="title_session_notes">Session Notes</string>
     <string name="label_notes">Notes</string>
-    <string name="placeholder_meditation_notes">How was your meditation?</string>
     <string name="action_save">Save</string>
     <string name="title_delete_session">Delete Session</string>
     <string name="message_delete_confirmation">Are you sure you want to delete this meditation session? This action cannot be undone.</string>

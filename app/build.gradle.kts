@@ -24,12 +24,6 @@ android {
                 )
             }
         }
-
-        // Use the newer way to specify language resources
-        androidResources {
-            // Define supported languages
-            localeFilters += listOf("en") // Add other languages you support
-        }
     }
 
     buildTypes {
@@ -54,12 +48,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
         freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
 
@@ -72,9 +66,13 @@ android {
         dataBinding = false
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.10"
-    }
+    // Removed composeOptions block as it's now handled by the kotlin.plugin.compose plugin
+}
+
+// Optional: Configure compose compiler if needed
+composeCompiler {
+    // Optional: Set up reports directory
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
 }
 
 dependencies {

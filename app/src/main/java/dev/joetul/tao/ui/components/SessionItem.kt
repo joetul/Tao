@@ -146,7 +146,6 @@ fun SessionItem(
                             .fillMaxWidth()
                             .height(150.dp),
                         label = { Text(stringResource(id = R.string.label_notes)) },
-                        placeholder = { Text(stringResource(id = R.string.placeholder_meditation_notes)) }
                     )
                 }
             },
