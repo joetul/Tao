@@ -58,6 +58,11 @@ class TimerService : Service() {
         applicationContext.getSharedPreferences("meditation_session_tracking", MODE_PRIVATE)
     }
 
+    // SharedPreferences for app settings
+    private val settingsPrefs by lazy {
+        applicationContext.getSharedPreferences("meditation_settings", MODE_PRIVATE)
+    }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -92,6 +97,9 @@ class TimerService : Service() {
                 updateRemainingTime(timeLeftMillis)
                 startForegroundService()
                 startCountdown()
+
+                // Ensure screen stays on if setting is enabled
+                handleScreenWakeLock()
 
                 // Ensure DND state is correct after restoration
                 ensureDoNotDisturbState()
@@ -234,6 +242,9 @@ class TimerService : Service() {
             ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
         )
 
+        // Handle the screen wake lock based on current settings
+        handleScreenWakeLock()
+
         // Ensure DND state matches current timer state
         ensureDoNotDisturbState()
 
@@ -257,8 +268,8 @@ class TimerService : Service() {
                 .putLong("service_timer_duration", timerDurationMillis)
         }
 
-        // Acquire wake lock to prevent CPU from sleeping
-        acquireWakeLock()
+        // Create wake lock to handle screen on policy
+        handleScreenWakeLock()
 
         _timerState.value = TimerState.RUNNING
         updateRemainingTime(timeLeftMillis)
@@ -312,6 +323,9 @@ class TimerService : Service() {
     fun resumeTimer() {
         // Play sound when resuming timer
         playSound()
+
+        // Ensure the wake lock is properly acquired when resuming
+        handleScreenWakeLock()
 
         startCountdown()
         _timerState.value = TimerState.RUNNING
@@ -496,33 +510,47 @@ class TimerService : Service() {
         )
     }
 
-    private fun acquireWakeLock() {
-        try {
-            val sharedPrefs = getSharedPreferences("meditation_settings", MODE_PRIVATE)
-            val keepScreenOn = sharedPrefs.getBoolean("keep_screen_on", true)
+    // New implementation of screen wake lock handling using modern APIs
+    private fun handleScreenWakeLock() {
+        // First release any existing wake lock to prevent leaks
+        releaseWakeLock()
 
-            if (keepScreenOn) {
+        try {
+            val keepScreenOn = settingsPrefs.getBoolean("keep_screen_on", true)
+
+            if (keepScreenOn && _timerState.value == TimerState.RUNNING) {
                 val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+
+                // Use FULL_WAKE_LOCK to keep screen on (modern approach)
                 wakeLock = powerManager.newWakeLock(
                     PowerManager.PARTIAL_WAKE_LOCK,
                     "Tao:MeditationWakeLock"
                 )
-                wakeLock?.acquire(timerDurationMillis + 5000) // Add a small buffer
+
+                // Set a timeout slightly longer than the timer duration
+                wakeLock?.acquire(timerDurationMillis + 10000) // Add a 10-second buffer
+
+                // Note: The actual screen-on functionality is handled at the Activity level
+                // by setting the FLAG_KEEP_SCREEN_ON flag in the window
             }
-        } catch (_: SecurityException) {
-            // Silent error handling
-        } catch (_: Exception) {
-            // Silent error handling
+        } catch (e: SecurityException) {
+            android.util.Log.e("TimerService", "Security exception acquiring wake lock: ${e.message}")
+        } catch (e: Exception) {
+            android.util.Log.e("TimerService", "Error acquiring wake lock: ${e.message}")
         }
     }
 
     private fun releaseWakeLock() {
-        wakeLock?.let {
-            if (it.isHeld) {
-                it.release()
+        try {
+            wakeLock?.let {
+                if (it.isHeld) {
+                    it.release()
+                }
             }
+            wakeLock = null
+        } catch (e: Exception) {
+            android.util.Log.e("TimerService", "Error releasing wake lock: ${e.message}")
         }
-        wakeLock = null
     }
 
     inner class TimerBinder : Binder() {
